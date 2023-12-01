@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{template.html}"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+<head>
+    <meta charset="utf-8">
+    <title>Liste des Chansons</title>
+    <link rel="stylesheet" type="text/css" href="/webjars/bootstrap/4.3.1/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <!-- jQuery via CDN -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <!-- Bootstrap JS via CDN -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+</head>
+<body>
+    <div layout:fragment="content" class="container mt-5">
+        <div class="card">
+            <div class="card-header">
+                Liste des Chansons
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover">
+                        <thead class="thead-dark">
+                            <tr>
+                                <th>ID</th>
+                                <th>Date de Création</th>
+                                <th>Nom</th>
+                                <th>Artiste</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="f : ${chansons.content}">
+                                <td th:text="${f.idChanson}"></td>
+                                <td th:text="${f.dateCreation}"></td>
+                                <td th:text="${f.nom}"></td>
+                                <td th:if="${!#strings.isEmpty(f.artiste)}" th:text="${f.artiste.getNom()}"></td>
+                                <td th:if="${#strings.isEmpty(f.artiste)}" th:text="${'Pas artiste'}"></td>
+                                <td sec:authorize="hasRole('ADMIN')">
+                                    <a class="btn btn-success btn-sm" th:href="@{/modifierChanson(id=${f.idChanson}, page=${currentPage})}">Edit</a>
+                                    <a class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?')" th:href="@{/supprimerChanson(id=${f.idChanson}, page=${currentPage}, size=${size})}">Delete</a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <ul class="pagination justify-content-center">
+                    <li th:each="page, status : ${pages}" th:class="${status.index == currentPage ? 'page-item active' : 'page-item'}">
+                        <a class="page-link" th:href="@{/ListeChansons(page=${status.index}, size=${size})}" th:text="${status.index}"></a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
